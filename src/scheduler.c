@@ -26,23 +26,32 @@ static void Scheduler_AddBasic(char* TaskName, uint32_t Time, bool Repeating, ui
 	Dlist_Insert(list, task);
 }
 
-void Scheduler_Add(char* TaskName, uint32_t Time){
+void Scheduler_Add(uint32_t Time, char* TaskName){
+	//printf("ADD %u %s\n",Time,TaskName);
 	Scheduler_AddBasic(TaskName,Time,false,0);
 }
 
-void Scheduler_AddRep(char* TaskName, uint32_t Time,uint32_t RepTime){
-	Scheduler_AddBasic(TaskName,Time,true,Time);
+void Scheduler_AddRep(uint32_t Time, uint32_t RepTime, char* TaskName){
+	//printf("ADDREP %u %u %s\n", Time, RepTime, TaskName);
+	Scheduler_AddBasic(TaskName,Time,true,RepTime);
 }
 
 void Scheduler_Time(uint32_t Time){
-	TIME=Time;
+	TIME=Time;//Update Time
 
-	while(list->head->Time < TIME){//if task is due to execute
+	if(list->head==NULL && list->tail==NULL){
+		return;//List Empty
+	}
+
+
+	while(list->head->Time <= TIME){//if task is due to execute
 		//TODO Print EXE Task
-
 		DlistN_t* n = Dlist_Remove(list,list->head); //pop head
+		printf("%u %s\n",n->Time,n->TaskName); //TASK EXE
+
 		if(n->repeating==true){
-			n->Time+=n->repeatTime;
+			//printf("original: %u, New: %u, Added %u\n",n->Time,(n->Time+n->repeatTime),n->repeatTime);
+			n->Time=n->Time+n->repeatTime;
 			Dlist_Insert(list,n);//reinsert
 		}else{
 			free(n); //compleately delete
@@ -51,15 +60,18 @@ void Scheduler_Time(uint32_t Time){
 }
 
 void Scheduler_Delete(char* Name){
-	free(Dlist_Remove(list,
-			Dlist_FindByName(list,Name)));
+	DlistN_t* delN = Dlist_FindByName(list,Name);
+	if(delN==NULL)
+		return;
+	Dlist_Remove(list,delN);
+	free(delN);
 }
 
 void Scheduler_List(){
 	printf("Upcoming tasks:\n");
-	DlistN_t* n = list.head;
+	DlistN_t* n = list->head;
 	while(n!=NULL){
-		printf("%s %u", n->TaskName,(n->Time-TIME));
+		printf("%s %u\n", n->TaskName,(n->Time-TIME));
 		n=n->next;
 	}
 

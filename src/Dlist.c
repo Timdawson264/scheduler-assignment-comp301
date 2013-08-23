@@ -32,6 +32,12 @@ DlistN_t* Dlist_FindByName(Dlist_t* Dlist, char* TaskName){
 }
 
 void Dlist_Insert(Dlist_t* Dlist, DlistN_t* n){
+	if(n==NULL){
+		perror("Cant Insert NULL");
+		return;
+	}
+
+
 	Dlist->size++;
 
 	//First Element
@@ -57,14 +63,15 @@ void Dlist_Insert(Dlist_t* Dlist, DlistN_t* n){
 	DlistN_t* testNode=Dlist->tail;//Start at tail
 	while(testNode!=NULL){
 
-		if(n->Time > testNode->Time){
+		if(n->Time >= testNode->Time){
 			//if insert at very end
 			if(testNode==Dlist->tail){
 				Dlist->tail=n;
+				n->next=NULL;
 			}
 
 			//insert after testNode
-			if(testNode->next!=NULL)//not tail which has not next
+			if(testNode->next!=NULL)//tail Node has no next
 				testNode->next->prev=n;
 			n->next=testNode->next; //null if tail node
 			testNode->next=n;
@@ -76,23 +83,31 @@ void Dlist_Insert(Dlist_t* Dlist, DlistN_t* n){
 		testNode=testNode->prev;
 	}
 	//Should Never Get here
-	fputs("ERROR Dlist Insert Failed",stderr);
 	Dlist->size--; //correct count
+	perror("ERROR Dlist Insert Failed");
+	printf("ERR NODE Name: %s Time: %u\n",n->TaskName,n->Time);
+	Dlist_list(Dlist);
+
 
 }
 
 DlistN_t* Dlist_Remove(Dlist_t* Dlist, DlistN_t* n){
-	if(Dlist->head==n)
-		Dlist->head=n->next;
-
-	if(Dlist->tail==n)
-		Dlist->tail=n->prev;
+	if(n==NULL){
+		perror("Cant Remove NULL");
+		return n;
+	}
 
 	if(n->next!=NULL)
 		n->next->prev=n->prev;
 
 	if(n->prev!=NULL)
 		n->prev->next=n->next;
+
+	if(Dlist->head==n)
+		Dlist->head=n->next;
+
+	if(Dlist->tail==n)
+		Dlist->tail=n->prev;
 
 	Dlist->size--;
 	return n;

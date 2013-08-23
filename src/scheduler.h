@@ -10,15 +10,15 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>.
+#include <string.h>
 #include "Dlist.h"
 
 
 
 void Scheduler_Init();
 
-void Scheduler_Add(char* TaskName, uint32_t Time);
-void Scheduler_AddRep(char* TaskName, uint32_t Time,uint32_t RepTime);
+void Scheduler_Add(uint32_t Time, char* TaskName);
+void Scheduler_AddRep(uint32_t Time, uint32_t RepTime, char* TaskName);
 void Scheduler_Time(uint32_t Time);
 void Scheduler_Delete(char* Name);
 void Scheduler_List();
