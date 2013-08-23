@@ -37,14 +37,15 @@ void Scheduler_AddRep(char* TaskName, uint32_t Time,uint32_t RepTime){
 void Scheduler_Time(uint32_t Time){
 	TIME=Time;
 
-	while(list->head->Time < TIME){
+	while(list->head->Time < TIME){//if task is due to execute
+		//TODO Print EXE Task
 
 		DlistN_t* n = Dlist_Remove(list,list->head); //pop head
 		if(n->repeating==true){
 			n->Time+=n->repeatTime;
 			Dlist_Insert(list,n);//reinsert
 		}else{
-			free(n);
+			free(n); //compleately delete
 		}
 	}
 }
@@ -55,6 +56,12 @@ void Scheduler_Delete(char* Name){
 }
 
 void Scheduler_List(){
+	printf("Upcoming tasks:\n");
+	DlistN_t* n = list.head;
+	while(n!=NULL){
+		printf("%s %u", n->TaskName,(n->Time-TIME));
+		n=n->next;
+	}
 
 }
 
